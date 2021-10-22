@@ -19,6 +19,11 @@
 			<artifactId>tomcat-servlet-api</artifactId>
 			<version>8.5.72</version>
 		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>3.12.10</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -43,18 +48,26 @@
 					<warSourceDirectory>WebContent</warSourceDirectory>
 				</configuration>
 			</plugin>
-			<!-- plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat8-maven-plugin</artifactId>
-				<version>3.0-r1756463</version>
-				<configuration>
-					<url>http://localhost:8080/manager/text</url>
-					<path>/DemoServlet</path>
-					<update>true</update>
-					<username>tomcat</username>
-					<password>tomcat</password>
-				</configuration>
-			</plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>7</source>
+                    <target>7</target>
+                </configuration>
+            </plugin>
+            <!-- plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat8-maven-plugin</artifactId>
+                <version>3.0-r1756463</version>
+                <configuration>
+                    <url>http://localhost:8080/manager/text</url>
+                    <path>/DemoServlet</path>
+                    <update>true</update>
+                    <username>tomcat</username>
+                    <password>tomcat</password>
+                </configuration>
+            </plugin-->
 		</plugins>
 	</build>
 </project>
