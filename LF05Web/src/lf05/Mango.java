@@ -9,8 +9,10 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +23,9 @@ import java.util.logging.Logger;
 
 public class Mango {
 
-    private static String connectionURL= "mongodb+srv://Admin:VSKOdZDMWTUlJWFY@mangodonnerbank.8ohfq.mongodb.net/Krautundrueben?retryWrites=true&w=majority";
+    private static String mongoUser;
+    private static String mongoPassword;
+    private static String connectionURL= "mongodb+srv://" + mongoUser + ":" + mongoPassword + "@mangodonnerbank.8ohfq.mongodb.net/Krautundrueben?retryWrites=true&w=majority";
     private static ConnectionString connectionString;
     private static MongoClientSettings settings;
     private static MongoClient mongoClient;
@@ -30,7 +34,7 @@ public class Mango {
 
     private static Logger lgr = Logger.getLogger(Mango.class.getName());
     private static Properties props = new Properties();
-    private static String fileName = "src/main/resources/db.properties";
+    private static String fileName =  "LF05Web/src/db.properties";
     private static String url;
     private static String user;
     private static String password;
@@ -82,6 +86,8 @@ public class Mango {
         catch (IOException ex)
         {
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            mySQLConnected = false;
+            System.out.println("Could not Connect to mySQL Server");
             return;
         }
         url = props.getProperty("db.url");
@@ -94,17 +100,31 @@ public class Mango {
             mySQLConnected = true;
             System.out.println("Established MySmartiers Connection");
         }
-            catch (SQLException ex)
+            catch (Exception ex)
         {
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
             mySQLConnected = false;
             System.out.println("Could not Connect to mySQL Server");
+            return;
         }
     }
 
     public static void mangoConnect()
     {
         try{
+            Properties mongoProps = new Properties();
+            String fileName = "LF05Web/src/dbMango.properties";
+            try (FileInputStream fis = new FileInputStream(fileName)) {
+                mongoProps.load(fis);
+            } catch (IOException ex) {
+                mangoConnected = false;
+                ex.printStackTrace();
+                System.out.println("Could not connect to MangoDonnerbank.");
+                return;
+
+            }
+            mongoUser = props.getProperty("db.user");
+            mongoPassword = props.getProperty("db.password");
             connectionString = new ConnectionString(connectionURL);
             settings = MongoClientSettings.builder()
                     .applyConnectionString(connectionString)
@@ -150,6 +170,8 @@ public class Mango {
     {
         if(!mangoConnected) mangoConnect();
         if(!mySQLConnected) mySquirrlConnect();
+        File file = new File(".");
+        for(String fileNames : file.list()) System.out.println(fileNames);
         MongoCollection collection = database.getCollection("Krautundrueben");
         loadMySmarties();
 
