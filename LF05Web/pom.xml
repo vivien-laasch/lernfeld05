@@ -56,6 +56,7 @@
 				<configuration>
 					<outputDirectory>C:\Users\vivien.laasch\XAMPP\tomcat\webapps</outputDirectory>
 					<warSourceDirectory>WebContent</warSourceDirectory>
+					<!--webappDirectory>C:\Users\vivien.laasch\XAMPP\tomcat\webapps\DemoServlet</webappDirectory-->
 				</configuration>
 			</plugin>
             <plugin>
