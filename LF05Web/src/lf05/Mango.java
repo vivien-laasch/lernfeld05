@@ -63,7 +63,7 @@ public class Mango {
                 while(result.next())
                 {
                     ArrayList<String> list = new ArrayList<>();
-                    for(int i =0; i < columnsNumber; i++)
+                    for(int i =0; i < columnsNumber - 0; i++)
                     {
                         list.add(result.getString(i));
                     }
