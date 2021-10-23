@@ -14,10 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +37,28 @@ public class Mango {
     private static String password;
     private static Connection sqlconnection;
     private static boolean mySQLConnected = false;
-    private static HashMap<String, HashMap<String,ArrayList<String>>> mySmarties;
+    private static HashMap<String, HashMap<String, HashMap<String, String>>> mySmarties = new HashMap<>();
+
+    public static void printMySmarties()
+    {
+        for(Map.Entry<String, HashMap<String, HashMap<String, String>>> table : mySmarties.entrySet())
+        {
+            System.out.println("============== Table: " + table.getKey() + " ==================================");
+            for(Map.Entry<String, HashMap<String, String>> row : table.getValue().entrySet())
+            {
+                String primalKey = row.getKey();
+                HashMap<String, String> entries = row.getValue();
+                System.out.println("----- ID: " + primalKey + "-----------");
+                for(String attribute : entries.keySet())
+                {
+                    System.out.println(attribute + ": " + entries.get(attribute));
+                }
+            }
+            System.out.println(SQL.Example2.getString());
+            System.out.println("=====================================================================");
+            System.out.println("");
+        }
+    }
 
     public static void loadMySmarties()
     {
@@ -55,19 +73,24 @@ public class Mango {
             }
             for(String s : tables)
             {
-                HashMap<String, ArrayList<String>> map = new HashMap<>();
+                HashMap<String, HashMap<String, String>> map = new HashMap<>();
                 Statement st = sqlconnection.createStatement();
                 ResultSet result = st.executeQuery("SELECT * FROM " + s);
                 ResultSetMetaData rsmd = result.getMetaData();
                 int columnsNumber = rsmd.getColumnCount();
                 while(result.next())
                 {
-                    ArrayList<String> list = new ArrayList<>();
-                    for(int i =0; i < columnsNumber - 0; i++)
-                    {
-                        list.add(result.getString(i));
+                    HashMap<String, String> list = new HashMap<>();
+                    try {
+                        for (int i = 1; i < columnsNumber + 1; i++) {
+                            System.out.println();
+                            list.put(rsmd.getColumnName(i),result.getString(i));
+                        }
+                        map.put(result.getString(1), list);
+                        System.out.println("adding " + list.get(0));
+                    }catch (Exception e) {
+                        System.out.println("columns: " + columnsNumber);
                     }
-                    map.put(list.get(0),list);
                 }
                 mySmarties.put(s,map);
             }
@@ -171,10 +194,9 @@ public class Mango {
         if(!mangoConnected) mangoConnect();
         if(!mySQLConnected) mySquirrlConnect();
         File file = new File(".");
-        for(String fileNames : file.list()) System.out.println(fileNames);
         MongoCollection collection = database.getCollection("Krautundrueben");
         loadMySmarties();
-
+        printMySmarties();
         //updateEntry(collection,new Document("mango","döner"), new Document("mango", "Mangoparty"));
 /*
  Statement st = con.createStatement();
