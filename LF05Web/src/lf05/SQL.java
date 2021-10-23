@@ -6,7 +6,7 @@ public enum SQL {
 
     private final String anfrage;
 
-    private SQL(String anfrage)
+    SQL(String anfrage)
     {
         this.anfrage = anfrage;
     }

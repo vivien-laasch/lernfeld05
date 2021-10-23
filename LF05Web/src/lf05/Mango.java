@@ -54,9 +54,30 @@ public class Mango {
                     System.out.println(attribute + ": " + entries.get(attribute));
                 }
             }
-            System.out.println(SQL.Example2.getString());
             System.out.println("=====================================================================");
             System.out.println("");
+        }
+    }
+
+    public static void putMySmartiersIntoDonnerbank()
+    {
+
+        if(!mangoConnected) return;
+        for(Map.Entry<String, HashMap<String, HashMap<String, String>>> table : mySmarties.entrySet())
+        {
+            try {database.createCollection(table.getKey());} catch (Exception e) {}
+            for(Map.Entry<String, HashMap<String, String>> row : table.getValue().entrySet())
+            {
+                String primalKey = row.getKey();
+                HashMap<String, String> entries = row.getValue();
+                Document document = new Document();
+                MongoCollection collection = database.getCollection(table.getKey());
+                for(String attribute : entries.keySet())
+                {
+                    document.append(attribute, entries.get(attribute));
+                }
+                collection.insertOne(document);
+            }
         }
     }
 
@@ -197,6 +218,7 @@ public class Mango {
         MongoCollection collection = database.getCollection("Krautundrueben");
         loadMySmarties();
         printMySmarties();
+        putMySmartiersIntoDonnerbank();
         //updateEntry(collection,new Document("mango","döner"), new Document("mango", "Mangoparty"));
 /*
  Statement st = con.createStatement();
