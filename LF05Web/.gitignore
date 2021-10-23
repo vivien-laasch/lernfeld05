@@ -2,4 +2,4 @@
 /target/
 /Users/
 /.settings/
-/src/dbMango.propertiers
+./src/dbMango.properties

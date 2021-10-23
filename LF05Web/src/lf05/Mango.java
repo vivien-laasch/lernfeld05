@@ -22,7 +22,7 @@ public class Mango {
 
     private static String mongoUser;
     private static String mongoPassword;
-    private static String connectionURL= "mongodb+srv://" + mongoUser + ":" + mongoPassword + "@mangodonnerbank.8ohfq.mongodb.net/Krautundrueben?retryWrites=true&w=majority";
+    private static String connectionURL;
     private static ConnectionString connectionString;
     private static MongoClientSettings settings;
     private static MongoClient mongoClient;
@@ -38,6 +38,72 @@ public class Mango {
     private static Connection sqlconnection;
     private static boolean mySQLConnected = false;
     private static HashMap<String, HashMap<String, HashMap<String, String>>> mySmarties = new HashMap<>();
+
+    public static void mySquirrlConnect() {
+        try (FileInputStream fis = new FileInputStream(fileName))
+        {
+            props.load(fis);
+        }
+        catch (IOException ex)
+        {
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            mySQLConnected = false;
+            System.out.println("Could not Connect to mySQL Server");
+            return;
+        }
+        url = props.getProperty("db.url");
+        user = props.getProperty("db.user");
+        password = props.getProperty("db.password");
+
+        try
+        {
+            sqlconnection = DriverManager.getConnection(url, user, password);
+            mySQLConnected = true;
+            System.out.println("Established MySmartiers Connection");
+        }
+        catch (Exception ex)
+        {
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            mySQLConnected = false;
+            System.out.println("Could not Connect to mySQL Server");
+            return;
+        }
+    }
+
+    public static void mangoConnect()
+    {
+        try{
+            Properties mongoProps = new Properties();
+            String fileName = "LF05Web/src/dbMango.properties";
+            try (FileInputStream fis = new FileInputStream(fileName)) {
+                mongoProps.load(fis);
+            } catch (IOException ex) {
+                mangoConnected = false;
+                ex.printStackTrace();
+                System.out.println("Could not connect to MangoDonnerbank.");
+                return;
+
+            }
+            mongoUser = mongoProps.getProperty("db.user");
+            System.out.println("Mango User: " + mongoUser);
+            mongoPassword = mongoProps.getProperty("db.password");
+            connectionURL =  "mongodb+srv://" + mongoUser + ":" + mongoPassword + "@mangodonnerbank.8ohfq.mongodb.net/Krautundrueben?retryWrites=true&w=majority";
+            connectionString = new ConnectionString(connectionURL);
+            settings = MongoClientSettings.builder()
+                    .applyConnectionString(connectionString)
+                    .build();
+            mongoClient = MongoClients.create(settings);
+            database = mongoClient.getDatabase("Krautundrueben");
+            mangoConnected = true;
+            System.out.println("Connected to MangoDonnerbank.");
+        } catch (Exception e) {
+            mangoConnected = false;
+            e.printStackTrace();
+            System.out.println("Could not connect to MangoDonnerbank.");
+        }
+        System.out.println(connectionString);
+    }
+
 
     public static void printMySmarties()
     {
@@ -74,6 +140,7 @@ public class Mango {
                 MongoCollection collection = database.getCollection(table.getKey());
                 for(String attribute : entries.keySet())
                 {
+                    if(entries.get(attribute) == null) continue;
                     document.append(attribute, entries.get(attribute));
                 }
                 collection.insertOne(document);
@@ -89,7 +156,6 @@ public class Mango {
             DatabaseMetaData md = sqlconnection.getMetaData();
             ResultSet rs = md.getTables(null, null, "%", null);
             while (rs.next()) {
-                System.out.println(rs.getString(3));
                 tables.add(rs.getString(3));
             }
             for(String s : tables)
@@ -104,13 +170,10 @@ public class Mango {
                     HashMap<String, String> list = new HashMap<>();
                     try {
                         for (int i = 1; i < columnsNumber + 1; i++) {
-                            System.out.println();
                             list.put(rsmd.getColumnName(i),result.getString(i));
                         }
                         map.put(result.getString(1), list);
-                        System.out.println("adding " + list.get(0));
                     }catch (Exception e) {
-                        System.out.println("columns: " + columnsNumber);
                     }
                 }
                 mySmarties.put(s,map);
@@ -119,70 +182,8 @@ public class Mango {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(mySmarties);
     }
 
-    public static void mySquirrlConnect() {
-        try (FileInputStream fis = new FileInputStream(fileName))
-        {
-            props.load(fis);
-        }
-        catch (IOException ex)
-        {
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
-            mySQLConnected = false;
-            System.out.println("Could not Connect to mySQL Server");
-            return;
-        }
-        url = props.getProperty("db.url");
-        user = props.getProperty("db.user");
-        password = props.getProperty("db.password");
-
-        try
-        {
-            sqlconnection = DriverManager.getConnection(url, user, password);
-            mySQLConnected = true;
-            System.out.println("Established MySmartiers Connection");
-        }
-            catch (Exception ex)
-        {
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
-            mySQLConnected = false;
-            System.out.println("Could not Connect to mySQL Server");
-            return;
-        }
-    }
-
-    public static void mangoConnect()
-    {
-        try{
-            Properties mongoProps = new Properties();
-            String fileName = "LF05Web/src/dbMango.properties";
-            try (FileInputStream fis = new FileInputStream(fileName)) {
-                mongoProps.load(fis);
-            } catch (IOException ex) {
-                mangoConnected = false;
-                ex.printStackTrace();
-                System.out.println("Could not connect to MangoDonnerbank.");
-                return;
-
-            }
-            mongoUser = props.getProperty("db.user");
-            mongoPassword = props.getProperty("db.password");
-            connectionString = new ConnectionString(connectionURL);
-            settings = MongoClientSettings.builder()
-                    .applyConnectionString(connectionString)
-                    .build();
-            mongoClient = MongoClients.create(settings);
-            database = mongoClient.getDatabase("Krautundrueben");
-            mangoConnected = true;
-            System.out.println("Connected to MangoDonnerbank.");
-        } catch (Exception e) {
-            mangoConnected = false;
-            e.printStackTrace();
-            System.out.println("Could not connect to MangoDonnerbank.");
-        }
-    }
 
     public static void clearCollections()
     {
@@ -214,10 +215,11 @@ public class Mango {
     {
         if(!mangoConnected) mangoConnect();
         if(!mySQLConnected) mySquirrlConnect();
+        clearCollections();
         File file = new File(".");
         MongoCollection collection = database.getCollection("Krautundrueben");
         loadMySmarties();
-        printMySmarties();
+        //printMySmarties();
         putMySmartiersIntoDonnerbank();
         //updateEntry(collection,new Document("mango","döner"), new Document("mango", "Mangoparty"));
 /*
