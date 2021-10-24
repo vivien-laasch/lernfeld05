@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app>
-	<display-name>DemoServlet</display-name>
+	<display-name>DBServlet</display-name>
 	<welcome-file-list>
 		<welcome-file>welcome.html</welcome-file>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
 	<servlet>
-		<servlet-name>DemoServlet</servlet-name>
-		<servlet-class>lf05.DemoServlet</servlet-class>
+		<servlet-name>DBServlet</servlet-name>
+		<servlet-class>lf05.DBServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>DemoServlet</servlet-name>
-		<url-pattern>/DemoServlet</url-pattern>
+		<servlet-name>DBServlet</servlet-name>
+		<url-pattern>/DBServlet</url-pattern>
 	</servlet-mapping>
 </web-app>

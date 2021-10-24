@@ -37,7 +37,7 @@
 	</dependencies>
 
 	<build>
-		<defaultGoal>war:exploded</defaultGoal>
+		<defaultGoal>war:war</defaultGoal>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<!-->plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>exec-maven-plugin</artifactId> 
@@ -54,9 +54,8 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>3.2.3</version>
 				<configuration>
-					<outputDirectory>C:\Users\vivien.laasch\XAMPP\tomcat\webapps</outputDirectory>
+					<outputDirectory>${CATALINA_HOME}\webapps</outputDirectory>
 					<warSourceDirectory>WebContent</warSourceDirectory>
-					<!--webappDirectory>C:\Users\vivien.laasch\XAMPP\tomcat\webapps\DemoServlet</webappDirectory-->
 				</configuration>
 			</plugin>
             <plugin>
