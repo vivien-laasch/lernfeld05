@@ -34,18 +34,19 @@ public class DBServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 		String table = request.getParameter("table");
-		Map<String, String> output = new HashMap<>();
+		Map<Integer, Map<String, String>> output = new HashMap<>();
 		PrintWriter out = response.getWriter();
 		try {
 			Connection con = DBModel.initDB();
 			output = DBModel.getTable(con, table);
 		} catch (Exception e) {
+			out.println(e.getMessage());
 			lgr.log(Level.SEVERE, e.getMessage(), e);
 		}
-
-		out.println("<h1>" +  DBModel.initDBB() + "</h1>");
-		out.println("<h1>" + table + "</h1>");
-		output.forEach((k, v) -> out.println("<h1>" + k + ": " + v + "</h1>"));
+		output.forEach((k, v) -> {
+			out.println("<h1>" + k + "</h1>\n");
+			v.forEach((x, y) -> out.println(x + ": " + y + "\n"));
+		});
 
 		/*
 		 * old forwarding testing RequestDispatcher rs =

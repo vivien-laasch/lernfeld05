@@ -1,15 +1,12 @@
 package lf05;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.HashMap;
 
 public class DBModel {
@@ -32,9 +29,8 @@ public class DBModel {
 		String passwd = props.getProperty("db.password");
 		String dbDriver = props.getProperty("db.driver");
 
-		Connection con = null;
 		Class.forName(dbDriver);
-		con = DriverManager.getConnection(url, user, passwd);
+		Connection con = DriverManager.getConnection(url, user, passwd);
 		return con;
 
 	}
@@ -54,18 +50,18 @@ public class DBModel {
 
 	}
 
-	protected static Map<String, String> getTable(Connection con, String table) throws SQLException {
+	protected static Map<Integer, Map<String, String>> getTable(Connection con, String table) throws SQLException {
 		ArrayList<String> cond = new ArrayList<>();
 		ArrayList<String> col = new ArrayList<>();
 		return DBModel.getTable(con, table, col, cond);
 	}
 
-	protected static Map<String, String> getTable(Connection con, String table, List<String> col, List<String> cond)
-			throws SQLException {
+	protected static Map<Integer, Map<String, String>> getTable(Connection con, String table, List<String> col,
+			List<String> cond) throws SQLException {
 		String filter = "";
 		StringBuilder bld = new StringBuilder();
 		ResultSet rs;
-		HashMap<String, String> ret = new HashMap<>();
+		Map<Integer, Map<String, String>> ret = new HashMap<>();
 
 		if (col.size() == cond.size()) {
 			for (int i = 0; i < col.size(); i++) {
@@ -74,20 +70,25 @@ public class DBModel {
 		}
 		filter = bld.toString();
 
-		// TODO Add back filter
-		String query = "SELECT * FROM" + table;
+		//TODO Add back filter
+		String query = "SELECT * FROM " + table + " WHERE 1=1 ";
 
 		try (Statement st = con.createStatement()) {
 			rs = st.executeQuery(query);
-		}
-
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int columnCount = rsmd.getColumnCount();
-		while (rs.next()) {
-			for (int i = 1; i <= columnCount; i++) {
-				ret.put(rsmd.getColumnName(i), rs.getString(i));
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int columnCount = rsmd.getColumnCount();
+			while (rs.next()) {
+				Map<String, String> tmp = new HashMap<>();
+				for (int i = 2; i <= columnCount; i++) {
+					tmp.put(rsmd.getColumnName(i), rs.getString(i));
+				}
+				ret.put(rs.getInt(1), tmp);
 			}
 		}
 		return ret;
+	}
+
+	public static String getTable2(Connection con, String table) {
+		return "SELECT * FROM " + table;
 	}
 }
