@@ -26,6 +26,13 @@ public class DBServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		lgr.info("Initialized Servlet.");
+	}
+
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		RequestDispatcher rs = request.getRequestDispatcher("welcome.html");
+		rs.forward(request, response);
 	}
 
 	@Override
