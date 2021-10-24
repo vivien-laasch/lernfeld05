@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class DBServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -19,9 +20,10 @@ public class DBServlet extends HttpServlet {
 	public void init() throws ServletException {
 		try {
 			FileHandler fh = new FileHandler("Servlet.log");
+			SimpleFormatter fmter = new SimpleFormatter();
 			lgr.addHandler(fh);
+			fh.setFormatter(fmter);
 		} catch (Exception e) {
-			lgr.log(Level.SEVERE, e.getMessage(), e);
 			e.printStackTrace();
 		}
 	}
@@ -34,11 +36,11 @@ public class DBServlet extends HttpServlet {
 		ArrayList<String> filters = new ArrayList<>();
 		Map<Integer, Map<String, String>> output = new HashMap<>();
 		PrintWriter out = response.getWriter();
-		
+
 		tables.add(request.getParameter("table"));
 		columns.add(request.getParameter("column"));
 		filters.add(request.getParameter("filter"));
-	
+
 		try {
 			Connection con = DBModel.initDB();
 			output = DBModel.getTable(con, tables, columns, filters);
