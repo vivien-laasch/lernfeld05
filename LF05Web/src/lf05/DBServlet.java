@@ -61,9 +61,5 @@ public class DBServlet extends HttpServlet {
 		});
 
 		out.println("<a href=\"welcome.html\">Back</a>");
-		/*
-		 * old forwarding testing RequestDispatcher rs =
-		 * request.getRequestDispatcher("welcome.html"); rs.forward(request, response);
-		 */
 	}
 }
