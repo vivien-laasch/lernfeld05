@@ -26,11 +26,6 @@ public class DBServlet extends HttpServlet {
 	}
 
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// stuff
-	}
-
-	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 		String table = request.getParameter("table");
@@ -48,16 +43,10 @@ public class DBServlet extends HttpServlet {
 			v.forEach((x, y) -> out.println(x + ": " + y + "\n"));
 		});
 
+		 out.println("<a href=\"welcome.html\">Back</a>");
 		/*
 		 * old forwarding testing RequestDispatcher rs =
 		 * request.getRequestDispatcher("welcome.html"); rs.forward(request, response);
-		 */
-	}
-
-	@Override
-	public void destroy() {
-		/*
-		 * end of Servlet life cycle
 		 */
 	}
 }
