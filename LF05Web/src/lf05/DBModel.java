@@ -16,12 +16,10 @@ public class DBModel {
 
 	}
 
-	protected static Connection initDB() throws SQLException, ClassNotFoundException {
+	protected static Connection initDB() throws SQLException, ClassNotFoundException, IOException {
 		String file = "db.properties";
 		try (InputStream is = DBModel.class.getClassLoader().getResourceAsStream(file)) {
 			props.load(is);
-		} catch (IOException e) {
-			// lgr.log(Level.SEVERE, e.getMessage(), e);
 		}
 
 		String url = props.getProperty("db.url");
@@ -30,48 +28,42 @@ public class DBModel {
 		String dbDriver = props.getProperty("db.driver");
 
 		Class.forName(dbDriver);
-		Connection con = DriverManager.getConnection(url, user, passwd);
-		return con;
+		return DriverManager.getConnection(url, user, passwd);
 
 	}
 
-	protected static String initDBB() {
-		String file = "db.properties";
-		try (InputStream is = DBModel.class.getClassLoader().getResourceAsStream(file)) {
-			props.load(is);
-		} catch (IOException e) {
-			return e.toString();
-		}
-
-		String url = props.getProperty("db.url");
-		String user = props.getProperty("db.user");
-		String passwd = props.getProperty("db.password");
-		return url + user + passwd;
-
-	}
-
-	protected static Map<Integer, Map<String, String>> getTable(Connection con, String table) throws SQLException {
+	protected static Map<Integer, Map<String, String>> getTable(Connection con, List<String> tables)
+			throws SQLException {
 		ArrayList<String> cond = new ArrayList<>();
 		ArrayList<String> col = new ArrayList<>();
-		return DBModel.getTable(con, table, col, cond);
+		return DBModel.getTable(con, tables, col, cond);
 	}
 
-	protected static Map<Integer, Map<String, String>> getTable(Connection con, String table, List<String> col,
+	protected static Map<Integer, Map<String, String>> getTable(Connection con, List<String> tables, List<String> col,
 			List<String> cond) throws SQLException {
-		String filter = "";
 		StringBuilder bld = new StringBuilder();
+		String filter = "";
+		String table = "";
 		ResultSet rs;
 		Map<Integer, Map<String, String>> ret = new HashMap<>();
 
-		if (col.size() == cond.size()) {
-			for (int i = 0; i < col.size(); i++) {
-				bld.append(" AND WHERE" + col.get(i) + " = " + cond.get(i));
-			}
+		for (String str : tables) {
+			bld.append(str + ",");
 		}
-		filter = bld.toString();
 
-		//TODO Add back filter
-		String query = "SELECT * FROM " + table + " WHERE 1=1 ";
+		table = bld.toString().replaceAll(",+$", "");
+
+		if (col.size() == cond.size()) {
+			bld = new StringBuilder();
+			for (int i = 0; i < col.size(); i++) {
+				if (col.get(i).length() > 0 && cond.get(i).length() > 0) {
+					bld.append(" AND " + col.get(i) + " = '" + cond.get(i) + "'");
+				}
+			}
+			filter = bld.toString();
+		}
+
+		String query = "SELECT * FROM " + table + " WHERE 1=1" + filter;
 
 		try (Statement st = con.createStatement()) {
 			rs = st.executeQuery(query);
@@ -88,7 +80,4 @@ public class DBModel {
 		return ret;
 	}
 
-	public static String getTable2(Connection con, String table) {
-		return "SELECT * FROM " + table;
-	}
 }

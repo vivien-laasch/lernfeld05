@@ -4,6 +4,7 @@ import javax.servlet.http.*;
 import javax.servlet.*;
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.FileHandler;
@@ -28,12 +29,19 @@ public class DBServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-		String table = request.getParameter("table");
+		ArrayList<String> tables = new ArrayList<>();
+		ArrayList<String> columns = new ArrayList<>();
+		ArrayList<String> filters = new ArrayList<>();
 		Map<Integer, Map<String, String>> output = new HashMap<>();
 		PrintWriter out = response.getWriter();
+		
+		tables.add(request.getParameter("table"));
+		columns.add(request.getParameter("column"));
+		filters.add(request.getParameter("filter"));
+	
 		try {
 			Connection con = DBModel.initDB();
-			output = DBModel.getTable(con, table);
+			output = DBModel.getTable(con, tables, columns, filters);
 		} catch (Exception e) {
 			out.println(e.getMessage());
 			lgr.log(Level.SEVERE, e.getMessage(), e);
@@ -43,7 +51,7 @@ public class DBServlet extends HttpServlet {
 			v.forEach((x, y) -> out.println(x + ": " + y + "\n"));
 		});
 
-		 out.println("<a href=\"welcome.html\">Back</a>");
+		out.println("<a href=\"welcome.html\">Back</a>");
 		/*
 		 * old forwarding testing RequestDispatcher rs =
 		 * request.getRequestDispatcher("welcome.html"); rs.forward(request, response);
