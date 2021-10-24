@@ -2,6 +2,7 @@ package lf05;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,9 +20,9 @@ public class DBModel {
 	}
 
 	protected static Connection initDB() throws SQLException, ClassNotFoundException {
-		String file = "lib/db.properties";
-		try (FileInputStream fis = new FileInputStream(file)) {
-			props.load(fis);
+		String file = "db.properties";
+		try (InputStream is = DBModel.class.getClassLoader().getResourceAsStream(file)) {
+			props.load(is);
 		} catch (IOException e) {
 			// lgr.log(Level.SEVERE, e.getMessage(), e);
 		}
@@ -35,6 +36,21 @@ public class DBModel {
 		Class.forName(dbDriver);
 		con = DriverManager.getConnection(url, user, passwd);
 		return con;
+
+	}
+
+	protected static String initDBB() {
+		String file = "db.properties";
+		try (InputStream is = DBModel.class.getClassLoader().getResourceAsStream(file)) {
+			props.load(is);
+		} catch (IOException e) {
+			return e.toString();
+		}
+
+		String url = props.getProperty("db.url");
+		String user = props.getProperty("db.user");
+		String passwd = props.getProperty("db.password");
+		return url + user + passwd;
 
 	}
 
@@ -58,7 +74,7 @@ public class DBModel {
 		}
 		filter = bld.toString();
 
-		//TODO Add back filter
+		// TODO Add back filter
 		String query = "SELECT * FROM" + table;
 
 		try (Statement st = con.createStatement()) {

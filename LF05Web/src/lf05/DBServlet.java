@@ -38,12 +38,12 @@ public class DBServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		try {
 			Connection con = DBModel.initDB();
-			out.println("<h1>" + con.toString() + "</h1>");
 			output = DBModel.getTable(con, table);
 		} catch (Exception e) {
 			lgr.log(Level.SEVERE, e.getMessage(), e);
 		}
 
+		out.println("<h1>" +  DBModel.initDBB() + "</h1>");
 		out.println("<h1>" + table + "</h1>");
 		output.forEach((k, v) -> out.println("<h1>" + k + ": " + v + "</h1>"));
 
