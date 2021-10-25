@@ -16,7 +16,7 @@ public class DBModel {
 
 	}
 
-	protected static Connection initDB() throws SQLException, ClassNotFoundException, IOException {
+	public static Connection initDB() throws SQLException, ClassNotFoundException, IOException {
 		String file = "db.properties";
 		try (InputStream is = DBModel.class.getClassLoader().getResourceAsStream(file)) {
 			props.load(is);
@@ -32,14 +32,14 @@ public class DBModel {
 
 	}
 
-	protected static Map<Integer, Map<String, String>> getTable(Connection con, List<String> tables)
+	public static Map<Integer, Map<String, String>> getTable(Connection con, List<String> tables)
 			throws SQLException {
 		ArrayList<String> cond = new ArrayList<>();
 		ArrayList<String> col = new ArrayList<>();
 		return DBModel.getTable(con, tables, col, cond);
 	}
 
-	protected static Map<Integer, Map<String, String>> getTable(Connection con, List<String> tables, List<String> col,
+	public static Map<Integer, Map<String, String>> getTable(Connection con, List<String> tables, List<String> col,
 			List<String> cond) throws SQLException {
 		StringBuilder bld = new StringBuilder();
 		String filter = "";
