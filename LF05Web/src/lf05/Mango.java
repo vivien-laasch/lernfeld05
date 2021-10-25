@@ -148,6 +148,15 @@ public class Mango {
         }
     }
 
+
+    public static String SQLNr1 = "select rezepte.Name, sum(zutat.KALORIEN) as Kalorien\n" +
+            "\tfrom rezepte\n" +
+            "\tjoin rezept_zutat on (rezepte.rezepteID = rezept_zutat.rezeptID) \n" +
+            "\tjoin zutat on (rezept_zutat.ZUTATENNR = zutat.ZUTATENNR)\n" +
+            "\tgroup by rezepte.rezepteID \n" +
+            "\thaving sum(zutat.KALORIEN) < 1000;\n";
+
+
     public static void loadMySmarties()
     {
         if(!mySQLConnected)return;
