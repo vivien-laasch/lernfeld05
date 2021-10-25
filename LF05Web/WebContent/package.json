@@ -1,0 +1,26 @@
+{
+  "name": "lernfeld-html",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JammerJochen/Lernfeld-HTML.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JammerJochen/Lernfeld-HTML/issues"
+  },
+  "homepage": "https://github.com/JammerJochen/Lernfeld-HTML#readme",
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  }
+}
