@@ -2,8 +2,9 @@
 <web-app>
 	<display-name>DBServlet</display-name>
 	<welcome-file-list>
-		<welcome-file>welcome.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file><welcome-file>welcome.html</welcome-file>
 		<welcome-file>index.html</welcome-file>
+		
 	</welcome-file-list>
 
 	<servlet>
